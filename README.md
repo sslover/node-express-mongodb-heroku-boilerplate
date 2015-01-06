@@ -124,21 +124,24 @@ The **.nodemonignore** file will ignore certain files and directories from being
 
 ### This App's Framework and NodeJS
 
+This app uses the following libraries and concepts:
+
 #### ExpressJS
 
-ExpressJS (http://expressjs.com/guide.html) is a popular framework for building web applications in NodeJS. ExpressJS's core is taken from the Connect framework.
+ExpressJS (http://expressjs.com/) is a popular framework for building web applications in NodeJS.
 
 #### Routing
 
-Routing is how you direct the user's requested URL to retrieve the appropriate 'page' or save the submitted form. All routes execute functions, the callbacks should receive a request and response object from Express
+Routing is how you direct the user's requested URL to retrieve the appropriate 'page' or save the submitted form. All routes execute functions, the callbacks should receive a request and response object from Express:
 
-app.get('/page1',function(request, response){
-    //your code goes here
+app.get('/hello',function(request, response){
+    // when the user requests the /hello page, this function is called
+    // your code goes here
 })
 
 #### HTTP Methods
 
-GET- a user requests a web page or resource
+GET - a user requests a web page or resource
 
 	app.get('/bio',function(request, response){
 	    console.log("GET request for /bio");
@@ -147,9 +150,9 @@ GET- a user requests a web page or resource
 
 More likely, you'll be serving up an html page like:
 
-	app.get('/',function(request, response){
+	app.get('/bio',function(request, response){
 	    console.log("GET request for /");
-	    response.render("index.html");
+	    response.render("bio.html");
 	});
 
 POST- a user submits a form
@@ -180,7 +183,9 @@ POST- a user submits a form
 
 [Hogan Express](https://github.com/vol4ok/hogan-express)
 
-We are using Hogan-Express, a templating engine, to render our html on ExpressJS. Hogan-Express templates are mainly HTML and include {{variablehere}} template tags to display dynamic data and perform simple logic and looping. You will save these templates to a specific directory and then tell ExpressJS what that directory named **/views**. We configure Express to use Hogan-Express template engine and set the template directory **/views** with these statements.
+We are using Hogan-Express, a templating engine, to render our html on ExpressJS. Hogan-Express templates are mainly HTML and include {{variablehere}} template tags to display dynamic data and perform simple logic and looping. It is based on the popular mustache templating language: <http://mustache.github.io/mustache.5.html>
+
+You will save these html templates to a specific directory and then tell ExpressJS about that directory, which we'll call **/views**. We configure Express to use Hogan-Express template engine and set the template directory **/views** with these statements.
 
 We configure ExpressJS to use Hogan-Express in two files
 
@@ -208,30 +213,37 @@ app.js
 
 	...
 
+Now, all yout html templates can go in the **/views** folder, and Express will know where to look for them.
+
 #### Rendering templates w/ data
 
-We define our incoming routes in app.js like mentioned above.
+We define our incoming routes in app.js like mentioned above. Now, we need to tell our app what to do when a certain route is called. We will create an **index.js** file in a folder called **/routes** to do that.
 
 app.js
 
-	var routes = require('../routes/index.js');
-	app.get('/page1', routes.index);
+	var routes = require('../routes/index.js'); // route logic is in this file
+	app.get('/page1', routes.getPage1);
+
+Here we are telling our app that, when /page1 is requested, call the function **getPage1** in the index.js file.
 
 /routes/index.js (example, not the same as actual code in routes/index.js)
 
-	exports.index = function(req, res) {
+	exports.getPage1 = function(req, res) {
 
 		var templateData = {
-			'title' : 'Hello World',
-			'content' : 'A Priest and a Rabbi walk into a bar...',
-			'tags' : ['bar','old','not funny']
-
+			'title' : 'Hello This is Page 1',
+			'content' : 'We are on page 1',
+			'tags' : ['hello','world','example!']
 		}
 
-		res.render('joke.html', templateData);
+		// we can pass in this templateData, which will be available within the page1.html template
+
+		res.render('page1.html', templateData);
 	}
 
-/views/joke.html
+This would look as follows in the html template:
+
+/views/page1.html
 
 	<h1>{{title}}</h1>
 	<hr>
@@ -246,7 +258,7 @@ app.js
 
 /view/layout.html
 
-Layouts allow you to have a standard header and footer for a set of pages. It is automatically enabled for this demo code to use /views/layout.html.P
+Layouts allow you to have a standard header and footer for a set of pages. It is automatically enabled for this demo code to use /views/layout.html
 
 	<html>
 		<head>
@@ -257,3 +269,4 @@ Layouts allow you to have a standard header and footer for a set of pages. It is
 		</body>
 	</html>
 
+Each unique template is placed within the yield tag.
