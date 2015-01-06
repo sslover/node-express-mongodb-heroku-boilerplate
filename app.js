@@ -11,7 +11,6 @@ var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
 var methodOverride = require('method-override');
 
-
 // the ExpressJS App
 var app = express();
 
@@ -39,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.db = mongoose.connect(process.env.MONGOLAB_URI);
 console.log("connected to database");
 
-// ROUTES
+// ROUTES, logic is in routes/index.js
 
 var routes = require('./routes/index.js');
 
@@ -73,16 +72,3 @@ app.get('/remote_api_demo', routes.remote_api);
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
