@@ -1,0 +1,15 @@
+{
+  "name": "node-express-mongodb-heroku-boilerplate",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "^4.10.7",
+    "hogan-express": "^0.5.2",
+    "moment": "^2.8.4",
+    "mongoose": "^3.8.21",
+    "request": "^2.51.0"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
+}

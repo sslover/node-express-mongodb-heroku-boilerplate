@@ -1,0 +1,57 @@
+<div class="row">
+
+	<div class="span6">
+
+		<h1>ExpressJS + Templates Demo</h1>
+		
+		<img src="http://i.imgur.com/ASfCs.gif" alt="Space shuttle animated gif crossing an LA highway">
+		
+		<hr>
+
+		<h3>{{pageTitle}}</h3>
+
+		<!-- astronaut loop -->
+		{{#astros}}
+		
+		<li><a href="/astronauts/{{slug}}">{{name}}</a> - {{source.name}}</li>
+		
+		{{/astros}}
+
+		<hr>
+		<p>
+			<a href="/create">Create a new astronaut</a>
+		</p>
+
+		<p>
+			<a href="/data/astronauts">Astronaut JSON</a>
+		</p>
+	</div>
+
+
+
+
+
+
+	<!-- right column -->
+	<div class="span6">
+		<h3>The Demo</h3>
+		<li>
+			<a class="btn" href="https://github.com/johnschimmel/Heroku-ExpressJS-Boilerplate">Github Repo</a>
+		</li>
+		<li>
+			<a href="/remote_api_demo">Remote API demo</a>
+		</li>
+		<br>
+	<b>Uses</b>
+		<li><a href="http://expressjs.com">ExpressJS</a> framework</li>
+		<li><a href="https://github.com/vol4ok/hogan-express">Hogan-Express</a> Template Engine</li>
+		<li>MongoLabs Heroku Addon</li>
+		<li><a href="http://mongoosejs.com/index.html">MongooseJS</a></li>
+		<li><a href="http://momentjs.com/">Moment.js</a></li>
+		<li><a href="https://github.com/mikeal/request">Request</a></li>
+
+
+	</div>
+
+
+</div>

@@ -1,0 +1,52 @@
+<div class="row">
+	<div class="span8">
+		<h3>{{page_title}}</h3>
+
+		<form method="POST" action="/astronauts/{{astro.slug}}/edit">
+
+			<label for="thenamebox">
+				Name <input type="text" name="name" id="thenamebox" value="{{astro.name}}" required> 
+			</label>
+
+
+			<label for="birthdate">
+				Birthdate <input type="date" name="birthdate" id="birthdate" value="{{astro.birthdateForm}}"> 
+			</label>
+
+			<label for="skills">
+				Skills <input type="text" name="skills" id="skills" value="{{#astro.skills}}{{.}},{{/astro.skills}}"> 
+			</label>			
+
+			<label for="photoUrl">
+				Photo URL <input type="text" name="photoUrl" id="photoUrl" value="{{astro.photo}}"> 
+			</label>
+
+
+			<label for="source_name">
+				Source name <input type="text" name="source_name" id="source_name"value="{{astro.source.name}}"> 
+			</label>
+			
+			<label for="source_url">
+				Source URL <input type="text" name="source_url" id="source_url" value="{{astro.source.url}}"> 
+			</label>
+
+			<label for="walkedonmoon">
+				Has walked on moon? <input type="checkbox" name="walkedonmoon" id="walkedonmoon" {{#astro.walkedOnMoon}}checked=checked{{/astro.walkedOnMoon}}> 
+			</label>
+
+			
+			<input type="submit" value="Edit Astronaut">
+
+		</form>
+
+		<hr>
+
+		<a href="/astronauts/{{astro.slug}}/delete" class="btn btn-danger">Delete record</a>
+	</div>
+</div>
+
+
+
+
+
+

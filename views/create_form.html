@@ -1,0 +1,64 @@
+<div class="row">
+	<div class="span8">
+		<h3>{{page_title}}</h3>
+
+		<form method="POST" action="/create">
+
+			<label for="thenamebox">
+				{{#errors.name}}
+				<span class="help-block alert alert-error">{{type}}</span>
+				{{/errors.name}}
+
+				Name <input type="text" name="name" class="required" id="thenamebox" value="{{astro.name}}" required>
+				
+			</label>
+
+
+			<label for="birthdate">
+				{{#errors.birthdate}}
+				<span class="help-block alert alert-error">{{type}}</span>
+				{{/errors.birthdate}}
+
+				Birthdate <input type="date" name="birthdate" id="birthdate" value="{{astro.birthdate}}"> 
+			</label>
+
+			<label for="skills">
+				{{#errors.skills}}
+				<span class="help-block alert alert-error">{{type}}</span>
+				{{/errors.skills}}
+
+				Skills <input type="text" name="skills" id="skills" value="{{astro.skills}}" required> 
+			</label>			
+
+			<label for="photoUrl">
+				{{#errors.photo}}
+				<span class="help-block alert alert-error">{{type}}</span>
+				{{/errors.photo}}
+
+				Photo URL <input type="text" name="photoUrl" id="photoUrl" value="{{astro.photoUrl}}"> 
+			</label>
+
+
+			<label for="source_name">
+				Source name <input type="text" name="source_name" id="source_name" value="{{astro.source_name}}"> 
+			</label>
+			
+			<label for="source_url">
+				Source URL <input type="text" name="source_url" id="source_url" value="{{astro.source_url}}"> 
+			</label>
+
+			<label for="walkedonmoon">
+				Has walked on moon? <input type="checkbox" name="walkedonmoon" id="walkedonmoon" {{#astro.walkedonmoon}}checked{{/astro.walkedonmoon}}> 
+			</label>
+
+			
+			<input type="submit" value="Add Astronaut">
+
+		</form>
+	</div>
+</div>
+
+
+
+
+

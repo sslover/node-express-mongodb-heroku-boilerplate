@@ -1,0 +1,43 @@
+
+<div class="row">
+	<div class="span12">
+
+		<h1>Remote API Demo</h1>
+		<hr>
+
+	</div>
+</div>
+
+<div class="row">
+
+	<!-- left column / display astronauts -->
+	<div class="span6">
+
+		{{#astronauts}} <!-- start astronaut loop -->
+		<div class="row">
+
+			<!-- display astro photo -->
+			<div class="span3">
+				<img src="{{photo}}" alt="Astronaut: {{name}}">
+			</div>
+			
+			<!-- display astro info -->
+			<div class="span3">
+				<h2>{{name}}</h2>
+			</div>
+
+		</div>
+		<br>
+		{{/astronauts}} <!-- end astronaut loop -->
+
+	</div>
+
+	<!-- right column / display raw json -->
+	<div class="span6">
+		<h2>Raw JSON</h2>
+		<p>
+			<a href="{{remote_url}}" target="_blank">{{remote_url}}</a>
+		</p>
+		<pre>{{rawJSON}}</pre>
+	</div>
+</div>

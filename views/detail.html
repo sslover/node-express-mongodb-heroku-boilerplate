@@ -1,0 +1,116 @@
+<div class="row">
+	
+	<!-- first column w/ image-->
+	<div class="span4">
+		<img src="{{astro.photo}}" alt="photo of astronaut {{astro.name}}" class="img-polaroid" width="320px"><br>
+		
+		<p>
+			source: 
+			<a href="{{astro.source.url}}" class="small">
+				{{astro.source.name}}
+			</a>
+
+			<br>
+
+			json:
+			<a href="/data/astronauts/{{astro.slug}}">/data/astronauts/{{astro.slug}}</a>
+		</p>
+
+
+	</div>
+	
+	<!-- second column w/ details-->
+	<div class="span4">
+		<h2>{{astro.name}}</h2>
+		<hr>
+
+		<div>
+			Born:
+			{{#formatDate}}{{astro.birthdate}}{{/formatDate}}
+			<br>
+
+			Skills: {{astro.skills}}<br>
+			
+			Missions:
+			<ul>
+				{{#astro.missions}}
+				<li>{{.}}</li>
+				{{/astro.missions}}
+				{{^astro.missions}}
+				No missions yet.
+				{{/astro.missions}}
+			</ul>
+		</div>
+
+		{{#astro.walkedOnMoon}}
+		<div>
+			<h3>WALKED ON THE MOON!</h3>
+			<img src="http://gifs.gifbin.com/062009/1246007745_michael_moonwalking.gif" alt="moonwalking animated gif with michael jackson">
+		</div>
+		{{/astro.walkedOnMoon}}
+
+		{{^astro.walkedOnMoon}}
+		NEVER GOT TO THE MOON :(
+		{{/astro.walkedOnMoon}}
+
+		<br><br>
+		<a href="/astronauts/{{astro.slug}}/edit" class="btn btn-info">edit</a>
+		
+		<hr>
+		<h3>Ship Logs</h3>
+		{{#astro.shiplogs}}
+			<i>{{date}}</i><br>
+			<p>{{content}}</p>
+			<hr>
+		{{/astro.shiplogs}}
+
+		{{^astro.shiplogs}}No logs{{/astro.shiplogs}}
+
+		<a href="#myModal" role="button" class="btn" data-toggle="modal">Add Log</a>
+
+		<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+			<div class="modal-header">
+			    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			    <h3 id="myModalLabel">Modal header</h3>
+		  	</div>
+		  	<div class="modal-body">
+				<form method="POST" action="/astronauts/{{astro.slug}}/addshiplog" id="shiplogform">
+					<legend>Add Ship's Log</legend>
+					<div>
+						<label for="logcontent">Log</label>
+						<textarea id="logcontent" name="logcontent"></textarea>
+					</div>
+
+					<div>
+						<label for="logdate">Date</label>
+						<input type="date" name="logdate" id="logdate" required>
+					</div>
+					
+					<div>
+						<label for="logtime">Time</label>
+						<input type="time" name="logtime" id="logtime" required>
+					</div>
+
+					<input type="submit" value="Add Log" class="btn btn-primary">
+				</form>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- third column w/ listings -->
+	<div class="span2">
+		<h3>Astronauts</h3>
+		<hr>
+		{{#astros}}
+		<li>
+			<a href="/astronauts/{{slug}}">{{name}}</a>
+		</li>
+		{{/astros}}
+
+		<br>
+		<a href="/create">Add new astronaut</a>
+	</div>
+
+</div>
