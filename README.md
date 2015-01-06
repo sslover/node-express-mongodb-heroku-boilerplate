@@ -134,14 +134,14 @@ ExpressJS (http://expressjs.com/) is a popular framework for building web applic
 
 Routing is how you direct the user's requested URL to retrieve the appropriate 'page' or save the submitted form. All routes execute functions, the callbacks should receive a request and response object from Express:
 
-app.get('/hello',function(request, response){
-    // when the user requests the /hello page, this function is called
-    // your code goes here
-})
+	app.get('/hello',function(request, response){
+	    // when the user requests the /hello page, this function is called
+	    // your code goes here
+	})
 
 #### HTTP Methods
 
-GET - a user requests a web page or resource
+GET - a user requests a web page or resource (in this case, '/bio')
 
 	app.get('/bio',function(request, response){
 	    console.log("GET request for /bio");
