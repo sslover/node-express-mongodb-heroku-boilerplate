@@ -124,10 +124,6 @@ The **.nodemonignore** file will ignore certain files and directories from being
 
 ### This App's Framework and NodeJS
 
-Libraries and frameworks are created for all programming languages to make complicated programming tasks more easier to program. A database library will create the connection to the database server, insert and query data and return a result that is easily used. A framework involves the same ideas of a library but it usually is larger in size and complexity - picking a framework is usually done at the beginning of development because it is often difficult to switch to another. Android, Arduino, OpenFrameworks, Sinatra, Ruby on Rails, Django and Processing are frameworks, each is a collection of libraries to interact with lower level code.
-
-Libraries and frameworks are available to make your programming life easier - someone else has had similar tasks and requirements so they organized their code into a library and made it available to the community.
-
 #### ExpressJS
 
 ExpressJS (http://expressjs.com/guide.html) is a popular framework for building web applications in NodeJS. ExpressJS's core is taken from the Connect framework.
@@ -144,21 +140,37 @@ app.get('/page1',function(request, response){
 
 GET- a user requests a web page or resource
 
-	app.get('/about',function(request, response){
-	    console.log("GET request for /about");
-	    response.send("This is the about page.");
+	app.get('/bio',function(request, response){
+	    console.log("GET request for /bio");
+	    response.send("This is the bio page.");
+	});
+
+More likely, you'll be serving up an html page like:
+
+	app.get('/',function(request, response){
+	    console.log("GET request for /");
+	    response.render("index.html");
 	});
 
 POST- a user submits a form
 
-	app.post("/the-form", function(request, response){
+	app.post("/form-submission", function(request, response){
 	    
-	    console.log("a user has request /the-form via POST");
+	    console.log("a user has submitted data to /form-submission via POST");
 	    
-	    //form processing code goes here....
+	    //you can see the submitted data with
+	    console.log(request.body);
+
+	    //can now process that data
 	    
-	    //send message to user
+	    //send message back to user
 	    response.send("okay, we'll process that right away.")
+
+	    // or you could redirect them back to the home page
+	    // response.redirect('/');
+
+	    // or you could render html
+	    // response.render('thanks.html');
 	});
 
 
@@ -168,7 +180,7 @@ POST- a user submits a form
 
 [Hogan Express](https://github.com/vol4ok/hogan-express)
 
-We will use Hogan-Express, Embedded JavaScript template engine to render our html on ExpressJS. Hogan-Express templates are the mainly HTML and include {{variablehere}} template tags to display dynamic data and perform simple logic and looping.  You will save these templates to a specific directory and then tell ExpressJS what that directory named **/views**. We configure Express to use Hogan-Express template engine and set the template directory **/views** with these statements.
+We are using Hogan-Express, a templating engine, to render our html on ExpressJS. Hogan-Express templates are mainly HTML and include {{variablehere}} template tags to display dynamic data and perform simple logic and looping. You will save these templates to a specific directory and then tell ExpressJS what that directory named **/views**. We configure Express to use Hogan-Express template engine and set the template directory **/views** with these statements.
 
 We configure ExpressJS to use Hogan-Express in two files
 
@@ -176,9 +188,8 @@ package.json
 	
 	...
 	"dependencies": {
-	    "express": "3.0.0rc5",
-	    "hogan-express" : "0.3.3",
-	    "moment" : "1.7.2"
+	    "express": "^4.10.7",
+	    "hogan-express": "^0.5.2"
   	},
   	...
 
@@ -206,7 +217,7 @@ app.js
 	var routes = require('../routes/index.js');
 	app.get('/page1', routes.index);
 
-/routes/index.js (example,not the same as actual code in routes/index.js)
+/routes/index.js (example, not the same as actual code in routes/index.js)
 
 	exports.index = function(req, res) {
 
