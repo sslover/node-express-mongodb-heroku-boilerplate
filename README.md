@@ -90,13 +90,18 @@ To get your updated code to **Heroku**, you'll need to:
 
 To get your updated code to **Github**, you'll need to:
 
-First, create a new repo.
-
-(then, once a repo is created and you have changes to push):
+(first, create a new repo; then, once a repo is created and you have changes to push):
 
 	git add .
 	git commit -am "your commit message"
-	git push origin master	
+	git push origin master
+
+You don't need to double add and double commit though. So the following will work:
+
+	git add .
+	git commit -am "your commit message"
+	git push origin master
+	git push heroku master
 
 ### Auto restart development server (optional)
 
