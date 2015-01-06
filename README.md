@@ -36,27 +36,37 @@ cd path/to/this/code/directory
 
 	heroku create
 
-NOTE: if it is your very FIRST time setting up a Heroku app, you will need to upload your public key to Heroku. See <http://stackoverflow.com/a/6059231>. As explained in that SO link, if you don't yet have a public key, you'll be prompted to add one.
+NOTE: if it is your very FIRST time setting up a Heroku app, you will need to upload a public key to Heroku. See <http://stackoverflow.com/a/6059231>. As explained in that StackOverlow link, if you don't yet have a public key, you'll be prompted to add one.
 
-8) Now that your heroku app is set-up, you can rename it whenever you like:
+8) Now that your heroku app is set-up, you can rename it whenever you like (now or in the future):
 
 heroku rename write-your-new-name
 
+your app will be available at your-app-name.herokuapp.com
+
+you can always see your app with the command:
+
+heroku open
+
 ### Setting Up Your MongoDB database
 
-Heroku has many nice add-ons that make it really easy to set-up an app. For example, the MongoLabs add-on gives us a MongoDB database with a single line of code.
+Heroku has many nice add-ons that make it easier to set-up an app. For example, the MongoLabs add-on gives you a MongoDB database with a single line of code.
 
 9) Add MongoLabs Starter MongoDB add on to your heroku app
 
-	heroku addons:add mongolab:starter
+	heroku addons:add mongolab
 
-10) Get Heroku MongoLab connection string into .env file
+If you log-in to your heroku dashboard at <https://heroku.com>, you'll now see this add-on. 
+
+10) Get Heroku MongoLab connection string into an .env file
 
 	heroku config --shell | grep MONGOLAB_URI >> .env
 
-Your connection string to MongoDB will be in your **.env** file now.
+Your connection string to MongoDB will be in your **.env** file now (go have a look). Your app connects to your database in the app.js file:
 
-Your .env file is a secret config file that holds your key app variables like this MongoDB URI string, and other things like 3rd Party API secrets and keys. It is in .gitignore, which means it is **not** tracked by .git and not available for others to see on github (this is good). 
+app.db = mongoose.connect(process.env.MONGOLAB_URI);
+
+Your .env file is a secret config file that holds key app variables like this MongoDB URI string, and other things like 3rd Party API secrets and keys. It is specified in .gitignore, which means the .env file will **not** tracked by .git and not available for others to see on github (this is good). 
 
 11) We're ready to go! Start server with **foreman start**.
 
