@@ -78,6 +78,26 @@ Foreman reads your .env file, populates the process.env object for use in your a
 
 13) Stop the web server press Ctrl+c in the Terminal window.
 
+### Push Your App to Github and Heroku
+
+As you make changes, you'll want to periodically push your updated code base to both Github and to Heroku (where it is publicly hosted).
+
+To get your updated code to **Heroku**, you'll need to:
+
+	git add .
+	git commit -am "your commit message"
+	git push heroku master
+
+To get your updated code to **Github**, you'll need to:
+
+First, create a new repo.
+
+(then, once a repo is created and you have changes to push):
+
+	git add .
+	git commit -am "your commit message"
+	git push origin master	
+
 ### Auto restart development server (optional)
 
 To auto restart your development server after you make some changes to your code. Install **Nodemon**. [Nodemon](https://github.com/remy/nodemon) will watch your files and restart the server for you.
