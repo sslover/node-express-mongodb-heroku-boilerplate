@@ -1,8 +1,11 @@
-
-
 /* ==========================================================================
-   Author's custom styles
+   Custom styles
    ========================================================================== */
+
+a{color:#9a63c9;}
+.center-it{text-align: center;}
+.thumb{width:100%;min-height: 320px;}
+.food-img{background-size: cover; height: 600px;}
 
 
 

@@ -1,64 +1,46 @@
-<div class="row">
-	<div class="span8">
-		<h3>{{page_title}}</h3>
+<div class="container-fluid">
+  <div class="row">
+  	<div class="col-md-12">
+      <div class="well bs-component">
+      	<form action="/add" method='POST'>
+      		<fieldset>
+            <legend class="center-it">Add a Food</legend>
+            <!-- Form Group 1-->
+            <div class="form-group col-lg-12">
+              <label for="name" class="col-lg-1 col-lg-offset-3">Name</label>
+              <div class="col-lg-4">
+	              <input type="text" class="form-control" name="name" id="name" value="{{food.name}}" placeholder="Enter the Food Name" required>
+              </div>              
+            </div>  
 
-		<form method="POST" action="/create">
+						<!-- Form Group 2-->
+            <div class="form-group col-lg-12">
+              <label for="photo" class="col-lg-1 col-lg-offset-3">Photo URL</label>
+              <div class="col-lg-4">
+	              <input type="text" class="form-control" name="photo" id="photo" value="{{food.photo}}" placeholder="Enter a Photo URL" required>
+              </div>
+            </div>
 
-			<label for="thenamebox">
-				{{#errors.name}}
-				<span class="help-block alert alert-error">{{type}}</span>
-				{{/errors.name}}
+						<!-- Form Group 3-->
+            <div class="form-group col-lg-12">
+              <label for="recommendedBy" class="col-lg-1 col-lg-offset-3">Recommended By</label>
+              <div class="col-lg-4">
+	              <input type="text" class="form-control" name="recommendedBy" id="recommendedBy" value="{{food.recommendedBy}}" placeholder="Enter Your Name" required>
+              </div>
+            </div> 
 
-				Name <input type="text" name="name" class="required" id="thenamebox" value="{{astro.name}}" required>
-				
-			</label>
+						<!-- Form Group 4 - Submit-->
+            <div class="form-group col-lg-12">
+              <div class="col-lg-4 col-lg-offset-4">
+                <button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+              </div>
+            </div>                         
 
-
-			<label for="birthdate">
-				{{#errors.birthdate}}
-				<span class="help-block alert alert-error">{{type}}</span>
-				{{/errors.birthdate}}
-
-				Birthdate <input type="date" name="birthdate" id="birthdate" value="{{astro.birthdate}}"> 
-			</label>
-
-			<label for="skills">
-				{{#errors.skills}}
-				<span class="help-block alert alert-error">{{type}}</span>
-				{{/errors.skills}}
-
-				Skills <input type="text" name="skills" id="skills" value="{{astro.skills}}" required> 
-			</label>			
-
-			<label for="photoUrl">
-				{{#errors.photo}}
-				<span class="help-block alert alert-error">{{type}}</span>
-				{{/errors.photo}}
-
-				Photo URL <input type="text" name="photoUrl" id="photoUrl" value="{{astro.photoUrl}}"> 
-			</label>
-
-
-			<label for="source_name">
-				Source name <input type="text" name="source_name" id="source_name" value="{{astro.source_name}}"> 
-			</label>
-			
-			<label for="source_url">
-				Source URL <input type="text" name="source_url" id="source_url" value="{{astro.source_url}}"> 
-			</label>
-
-			<label for="walkedonmoon">
-				Has walked on moon? <input type="checkbox" name="walkedonmoon" id="walkedonmoon" {{#astro.walkedonmoon}}checked{{/astro.walkedonmoon}}> 
-			</label>
-
-			
-			<input type="submit" value="Add Astronaut">
-
-		</form>
-	</div>
+      		</fieldset>
+      	</form>
+      </div>
+    </div>
+  </div>
 </div>
-
-
-
 
 

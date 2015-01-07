@@ -42,31 +42,30 @@ console.log("connected to database");
 
 var routes = require('./routes/index.js');
 
-app.get('/', routes.index);
+// home page
+app.get('/', routes.index); // calls index function in /routes/index.js
 
-//new astronaut routes
-app.get('/create',routes.astroForm); //display form
-app.post('/create',routes.createAstro); //form POST submits here
+//add new food routes
+app.get('/add',routes.addFoodForm); //display form to add a new food product
+app.post('/add',routes.addFoodToDb); //form POST submits here
 
-// display a single astronaut
-app.get('/astronauts/:astro_id', routes.detail);
+// display a single food item
+// for example '/food/chunky-peanut-butter'
+app.get('/food/:slug', routes.oneFood);
 
-// edit astronaut
-app.get('/astronauts/:astro_id/edit', routes.editAstroForm); //GET display form
-app.post('/astronauts/:astro_id/edit', routes.updateAstro); //POST update database
+// edit food item
+app.get('/food/:slug/edit', routes.editFoodForm); //GET the edit form
+app.post('/food/:slug/edit', routes.updateFoodToDb); //PUT - update food
 
-// delete astronaut
-app.get('/astronauts/:astro_id/delete', routes.deleteAstro);
+// delete a food
+app.get('/food/:slug/delete', routes.deleteFood);
 
-// add ship's log
-app.post('/astronauts/:astro_id/addshiplog', routes.postShipLog);
+// increment food's upvotes
+app.get('/food/:slug/upvote', routes.incrementUpvote);
 
-// API JSON Data routes
-app.get('/data/astronauts',routes.data_all);
-app.get('/data/astronauts/:astro_id', routes.data_detail);
-
-// consume a remote API
-app.get('/remote_api_demo', routes.remote_api);
+// Make the data into an API - JSON Data routes
+app.get('/api/food',routes.allFoodApi);
+app.get('/api/food/:slug', routes.oneFoodApi);
 
 // create NodeJS HTTP server using 'app'
 http.createServer(app).listen(app.get('port'), function(){

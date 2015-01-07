@@ -5,38 +5,41 @@
  * Routes contains the functions (callbacks) associated with request urls.
  */
 
-var request = require('request'); // library to make requests to remote urls
-
-var moment = require("moment"); // date manipulation library
-var astronautModel = require("../models/astronaut.js"); //db model
-
+var Food = require("../models/model.js"); //our db model
 
 /*
 	GET /
 */
+
+// home page route to show all suggested foods
 exports.index = function(req, res) {
 	
 	console.log("main page requested");
 
-	// query for all astronauts
-	// .find will accept 3 arguments
+	// we want to show all the foods that are already in the database
+
+	// query for all foods
+	// .find will accept 4 arguments
+	//  see http://mongoosejs.com/docs/api.html#model_Model.find
 	// 1) an object for filtering {} (empty here)
-	// 2) a string of properties to be return, 'name slug source' will return only the name, slug and source returned astronauts
-	// 3) callback function with (err, results)
+	// 2) a string of properties to return, 'name slug upvotes photo recommendedB' will return only those attributes of the model
+	// 3) an object for sorting {sort:'-upvotes'}, the most upvoted will come first
+	// 4) callback function with (err, data)
 	//    err will include any error that occurred
-	//	  allAstros is our resulting array of astronauts
-	astronautModel.find({}, 'name slug source', function(err, allAstros){
+	//	  data is our resulting array of food objects returned from the database
+	Food.find({}, 'name slug upvotes photo recommendedBy',{sort:'-upvotes'}, function(err, data){
 
 		if (err) {
-			res.send("Unable to query database for astronauts").status(500);
+			console.log(err);
+			res.send("Unable to query database for food").status(500);
 		};
 
-		console.log("retrieved " + allAstros.length + " astronauts from database");
+		console.log("retrieved " + data.length + " food products from database");
 
-		//build and render template
+		//build and render the template data object, which we will pass into the page
 		var templateData = {
-			astros : allAstros,
-			pageTitle : "NASA Astronauts (" + allAstros.length + ")"
+			food : data,
+			pageTitle : "ITP Snacks! (" + data.length + "Food Products)"
 		}
 
 		res.render('index.html', templateData);
@@ -45,20 +48,26 @@ exports.index = function(req, res) {
 
 }
 
-exports.data_all = function(req, res) {
+/*
+	GET /api/food
+*/
 
-	astroQuery = astronautModel.find({}); // query for all astronauts
-	astroQuery.sort('-birthdate');
+// api route to return all food as JSON
+exports.allFoodApi = function(req, res) {
+
+	// this is another way of doing a db query, which is identical to the above
+	foodQuery = Food.find({}); // query for all food with no filters
+	foodQuery.sort('-upvotes'); // sort by upvotes
 	
-	// display only 3 fields from astronaut data
-	astroQuery.select('name photo birthdate');
+	// display only these fields from food data
+	foodQuery.select('name slug upvotes photo recommendedBy');
 	
-	astroQuery.exec(function(err, allAstros){
+	foodQuery.exec(function(err, data){
+
 		// prepare data for JSON
 		var jsonData = {
 			status : 'OK',
-			astros : allAstros
-			
+			food : data
 		}
 
 		res.json(jsonData);
@@ -67,383 +76,308 @@ exports.data_all = function(req, res) {
 }
 
 /*
-	GET /astronauts/:astro_id
+	GET /food/:slug
 */
-exports.detail = function(req, res) {
 
-	console.log("detail page requested for " + req.params.astro_id);
+// get a single food item and display it to user
+exports.oneFood = function(req, res) {
 
-	//get the requested astronaut by the param on the url :astro_id
-	var astro_id = req.params.astro_id;
+	console.log("detail page requested for food with slug " + req.params.slug);
 
-	// query the database for astronaut
-	var astroQuery = astronautModel.findOne({slug:astro_id});
-	astroQuery.exec(function(err, currentAstronaut){
+	//get the requested food item by the param on the url /food/:slug
+	var requestedSlug = req.params.slug;
+
+	// query the database for that food with findOne, searching by its slug
+	// see http://mongoosejs.com/docs/api.html#model_Model.findOne
+	Food.findOne({slug:requestedSlug},function(err, data){
 
 		if (err) {
-			return res.status(500).send("There was an error on the astronaut query");
+			console.log(err);
+			return res.status(500).send("There was an error on the food query");
 		}
 
-		if (currentAstronaut == null) {
+		if (data == null) {
+			console.log("couldn't find that food!")
 			return res.status(404).render('404.html');
 		}
 
-		console.log("Found astro");
-		console.log(currentAstronaut.name);
+		console.log("Found the matching food item! --> " + data.name);
 
-		// formattedBirthdate function for currentAstronaut
-		currentAstronaut.formattedBirthdate = function() {
-			// formatting a JS date with moment
-			// http://momentjs.com/docs/#/displaying/format/
-            return moment(this.birthdate).format("dddd, MMMM Do YYYY");
-        };
-		
-		//query for all astronauts, return only name and slug
-		astronautModel.find({}, 'name slug', function(err, allAstros){
-
-			console.log("retrieved all astronauts : " + allAstros.length);
-
-			//prepare template data for view
+			//prepare template data to pass into the view
 			var templateData = {
-				astro : currentAstronaut,
-				astros : allAstros,
-				pageTitle : currentAstronaut.name
+				food : data,
+				pageTitle : data.name
 			}
 
 			// render and return the template
-			res.render('detail.html', templateData);
-
-
-		}) // end of .find (all) query
+			res.render('detail.html', templateData);				
 		
-	}); // end of .findOne query
-
-}
-
-exports.data_detail = function(req, res) {
-
-	console.log("detail page requested for " + req.params.astro_id);
-
-	//get the requested astronaut by the param on the url :astro_id
-	var astro_id = req.params.astro_id;
-
-	// query the database for astronaut
-	var astroQuery = astronautModel.findOne({slug:astro_id});
-	astroQuery.exec(function(err, currentAstronaut){
-
-		if (err) {
-			return res.status(500).send("There was an error on the astronaut query");
-		}
-
-		if (currentAstronaut == null) {
-			return res.status(404).render('404.html');
-		}
-
-
-		// formattedBirthdate function for currentAstronaut
-		currentAstronaut.formattedBirthdate = function() {
-			// formatting a JS date with moment
-			// http://momentjs.com/docs/#/displaying/format/
-            return moment(this.birthdate).format("dddd, MMMM Do YYYY");
-        };
-		
-		//prepare JSON data for response
-		var jsonData = {
-			astro : currentAstronaut,
-			status : 'OK'
-		}
-
-		// return JSON to requestor
-		res.json(jsonData);
-
 	}); // end of .findOne query
 
 }
 
 /*
-	GET /create
+	GET api/food/:slug
 */
-exports.astroForm = function(req, res){
+
+// get a single food item and return it in json
+// same as above only responds in json
+
+exports.oneFoodApi = function(req, res) {
+
+	console.log("detail page requested for food with slug " + req.params.slug);
+
+	//get the requested food item by the param on the url /food/:slug
+	var requestedSlug = req.params.slug;
+
+	// query the database for that food with findOne, searching by its slug
+	// see http://mongoosejs.com/docs/api.html#model_Model.findOne
+	Food.findOne({slug:requestedSlug},function(err, data){
+
+		if (err) {
+			console.log(err);
+			return res.status(500).send("There was an error on the food query");
+		}
+
+		if (data == null) {
+			console.log("couldn't find that food!")
+			return res.status(404).render('404.html');
+		}
+
+		console.log("Found the matching food item! --> " + data.name);
+
+			//prepare template data to pass into the view
+			var jsonData = {
+				food : data,
+				status : 'OK'
+			}
+
+			// return the JSON
+			res.json(jsonData);			
+		
+	}); // end of .findOne query
+
+}
+
+/*
+	GET /add
+*/
+
+// serves up the add product form
+exports.addFoodForm = function(req, res){
 
 	var templateData = {
-		page_title : 'Enlist a new astronaut'
+		pageTitle : 'Suggest a Product!'
 	};
 
 	res.render('create_form.html', templateData);
 }
 
 /*
-	POST /create
+	POST /add
 */
-exports.createAstro = function(req, res) {
+
+// saves a new product to the database from the POST request
+exports.addFoodToDb = function(req, res) {
 	
 	console.log("received form submission");
-	console.log(req.body);
+	console.log(req.body); // data to save
 
 	// accept form post data
-	var newAstro = new astronautModel({
-		name : req.body.name,
-		photo : req.body.photoUrl,
-		source : {
-			name : req.body.source_name,
-			url : req.body.source_url
-		},
-		slug : req.body.name.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'_')
-
+	// make it into an object we'll save
+	var foodToSave = new Food({
+		name: req.body.name,
+		photo: req.body.photo,
+		recommendedBy: req.body.recommendedBy,
+		slug : req.body.name.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'_') 
+		// the above nifty function takes the name and makes a slug out of it like 
+		// hello-this-is-the-name
 	});
-
-	// you can also add properties with the . (dot) notation
-	if (req.body.birthdate) {
-		newAstro.birthdate = moment(req.body.birthdate).toDate();
-	}
-
-	newAstro.skills = req.body.skills.split(",");
-
-	// walked on moon checkbox
-	if (req.body.walkedonmoon) {
-		newAstro.walkedOnMoon = true;
-	}
 	
-	// save the newAstro to the database
-	newAstro.save(function(err){
+	// save the food to the database
+	foodToSave.save(function(err,data){
 		if (err) {
-			console.error("Error on saving new astronaut");
-			console.error(err); // log out to Terminal all errors
+			// if there's an error on saving (perhaps a validation error?)
+			console.log("Error on saving the food");
+			console.log(err); // log out to Terminal all errors
 
 			var templateData = {
-				page_title : 'Enlist a new astronaut',
+				pageTitle : 'Suggest a Product!',
 				errors : err.errors, 
-				astro : req.body
+				food : req.body
 			};
 
+			// re-render the create page, but pass in the templateData
+			// this means the user will see the form with the data they already entered
 			res.render('create_form.html', templateData);
-			// return res.send("There was an error when creating a new astronaut");
 
 		} else {
-			console.log("Created a new astronaut!");
-			console.log(newAstro);
+			console.log("Created a new food!");
+			console.log(data);
 			
-			// redirect to the astronaut's page
-			res.redirect('/astronauts/'+ newAstro.slug)
+			// redirect to this new food's page
+			res.redirect('/food/'+ data.slug);
 		}
 	});
 };
 
-exports.editAstroForm = function(req, res) {
+/*
+	POST /food/:slug/edit
+*/
 
-	// Get astronaut from URL params
-	var astro_id = req.params.astro_id;
-	var astroQuery = astronautModel.findOne({slug:astro_id});
-	astroQuery.exec(function(err, astronaut){
+//prepares and populates the form to edit a food
+exports.editFoodForm = function(req, res) {
+
+	// Get food by its slug in /food/:slug/edit
+	var requestedSlug = req.params.slug;
+
+	// query the database for that food with findOne, searching by its slug
+	// see http://mongoosejs.com/docs/api.html#model_Model.findOne	
+	Food.findOne({slug:requestedSlug},function(err, data){
 
 		if (err) {
 			console.error("ERROR");
 			console.error(err);
-			res.send("There was an error querying for "+ astro_id).status(500);
+			res.send("There was an error querying for "+ requestedSlug).status(500);
 		}
 
-		if (astronaut != null) {
-
-			// birthdateForm function for edit form
-			// html input type=date needs YYYY-MM-DD format
-			astronaut.birthdateForm = function() {
-					return moment(this.birthdate).format("YYYY-MM-DD");
-			}
-
-			// prepare template data
-			var templateData = {
-				astro : astronaut
-			};
-
-			// render template
-			res.render('edit_form.html',templateData);
-
-		} else {
-
-			console.log("unable to find astronaut: " + astro_id);
+		if (data == null) {
+			console.log("couldn't find that food!")
 			return res.status(404).render('404.html');
 		}
 
-	})
+		if (data != null) {
+
+			// prepare template data
+			var templateData = {
+				pageTitle: "Edit "+data.name,
+				food: data
+			};
+
+			// render the edit form, passing in the existing values so the user can see them
+			res.render('edit_form.html',templateData);
+
+		}
+
+	}) // end .findOne
 
 }
 
-exports.updateAstro = function(req, res) {
+/*
+	POST /food/:slug/edit
+*/
 
-	// Get astronaut from URL params
-	var astro_id = req.params.astro_id;
+//takes the data from the POST request and updates the food
+exports.updateFoodToDb = function(req, res) {
 
-	// prepare form data
+	// Get food by its slug in /food/:slug/edit
+	var requestedSlug = req.params.slug;
+
+	// accept form post data
+	// make it into an object we'll save
 	var updatedData = {
-		name : req.body.name,
-		photo : req.body.photoUrl,
-		source : {
-			name : req.body.source_name,
-			url : req.body.source_url
-		},
-		birthdate : moment(req.body.birthdate).toDate(),
-		skills : req.body.skills.split(","),
-
-		walkedOnMoon : (req.body.walkedonmoon) ? true : false
-		
+		name: req.body.name,
+		photo: req.body.photo,
+		recommendedBy: req.body.recommendedBy,
+		slug : req.body.name.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'_') 
+		// the above nifty function takes the name and makes a slug out of it like 
+		// hello-this-is-the-name
 	}
 
 
-	// query for astronaut
-	astronautModel.update({slug:astro_id}, { $set: updatedData}, function(err, astronaut){
+	// query and update the requested food
+	// see http://mongoosejs.com/docs/api.html#model_Model.update
+	// $set updates the field if it exists, otherwise it adds it
+	// http://docs.mongodb.org/manual/reference/operator/update/set/
+	Food.update({slug:requestedSlug}, { $set: updatedData}, function(err, data){
 
 		if (err) {
 			console.error("ERROR: While updating");
 			console.error(err);			
 		}
 
-		if (astronaut != null) {
-			res.redirect('/astronauts/' + astro_id);
+		if (data != null) {
+			// redirect to that updated food!
+			res.redirect('/food/' + updatedData.slug);
 
 		} else {
 
-			// unable to find astronaut, return 404
-			console.error("unable to find astronaut: " + astro_id);
+			// unable to find that food, return 404
+			console.error("unable to find food: " + data.slug);
 			return res.status(404).render('404.html');
 		}
 	})
 }
 
-exports.postShipLog = function(req, res) {
+/*
+	GET /food/:slug/upvote
+*/
 
-	// Get astronaut from URL params
-	var astro_id = req.params.astro_id;
+// increments the upvote a given food
+exports.incrementUpvote = function(req,res){
 
-	// query database for astronaut
-	astronautModel.findOne({slug:astro_id}, function(err, astronaut){
+	// Get food by its slug in /food/:slug/upvote
+	var requestedSlug = req.params.slug;
+
+	// query the database for that food with findOne, searching by its slug
+	// see http://mongoosejs.com/docs/api.html#model_Model.findOne	
+	Food.findOne({slug:requestedSlug},function(err, data){
 
 		if (err) {
 			console.error("ERROR");
 			console.error(err);
-			res.send("There was an error querying for "+ astro_id).status(500);
+			res.send("There was an error querying for "+ requestedSlug).status(500);
 		}
 
-		if (astronaut != null) {
-
-			// found the astronaut
-
-			// concatenate submitted date field + time field
-			var datetimestr = req.body.logdate + " " + req.body.logtime;
-
-			console.log(datetimestr);
-			
-			// add a new shiplog
-			var logData = {
-				date : moment(datetimestr, "YYYY-MM-DD HH:mm").toDate(),
-				content : req.body.logcontent
-			};
-
-			console.log("new ship log");
-			console.log(logData);
-
-			astronaut.shiplogs.push(logData);
-			astronaut.save(function(err){
-				if (err) {
-					console.error(err);
-					res.send(err.message);
-				}
-			});
-
-			res.redirect('/astronauts/' + astro_id);
-
-
-		} else {
-
-			// unable to find astronaut, return 404
-			console.error("unable to find astronaut: " + astro_id);
+		if (data == null) {
+			console.log("couldn't find that food!")
 			return res.status(404).render('404.html');
 		}
-	})
-}
 
-exports.deleteAstro = function(req,res) {
+		if (data != null) {
 
-	// Get astronaut from URL params
-	var astro_id = req.params.astro_id;
+			// now we will update this returned data
+			var newUpvoteCount = data.upvotes + 1; // increment by 1
+			Food.update({slug:requestedSlug},{upvotes:newUpvoteCount},function(err,response){
 
-	// if querystring has confirm=yes, delete record
-	// else display the confirm page
+				if(err){
+					console.log(err);
+					return res.json({status:"ERROR"});
+				}
 
-	if (req.query.confirm == 'yes')  {  // ?confirm=yes
-	
-		astronautModel.remove({slug:astro_id}, function(err){
-			if (err){ 
-				console.error(err);
-				res.send("Error when trying to remove astronaut: "+ astro_id);
-			}
+				var jsonData = {
+					status: 'OK'
+				}
 
-			res.send("Removed astronaut. <a href='/'>Back to home</a>.");
-		});
+				res.json(jsonData); // respond back with JSON
 
-	} else {
-		//query astronaut and display confirm page
-		astronautModel.findOne({slug:astro_id}, function(err, astronaut){
+			}) // end update
 
-			if (err) {
-				console.error("ERROR");
-				console.error(err);
-				res.send("There was an error querying for "+ astro_id).status(500);
-			}
-
-			if (astronaut != null) {
-
-				var templateData = {
-					astro : astronaut
-				};
-				
-				res.render('delete_confirm.html', templateData);
-			
-			}
-		})
-
-	}
-};
-
-exports.remote_api = function(req, res) {
-
-	var remote_api_url = 'http://itpdwdexpresstemplates.herokuapp.com/data/astronauts';
-	// var remote_api_url = 'http://localhost:5000/data/astronauts';
-
-	// make a request to remote_api_url
-	request.get(remote_api_url, function(error, response, data){
-		
-		if (error){
-			res.send("There was an error requesting remote api url.");
-			return;
 		}
 
-		// Step 2 - convert 'data' to JS
-		// convert data JSON string to native JS object
-		var apiData = JSON.parse(data);
+	}) // end .findOne
 
-		console.log(apiData);
-		console.log("***********");
+}
 
+/*
+	GET /food/:slug/delete
+*/
 
-		// STEP 3  - check status / respond
-		// if apiData has property 'status == OK' then successful api request
-		if (apiData.status == 'OK') {
+// deletes a food with a given slug
+exports.deleteFood = function(req,res) {
 
-			// prepare template data for remote_api_demo.html template
-			var templateData = {
-				astronauts : apiData.astros,
-				rawJSON : data, 
-				remote_url : remote_api_url
-			}
+	// Get food by its slug in /food/:slug/edit
+	var requestedSlug = req.params.slug;
+	
+	// remove the requested food based on its requestedSlug
+	// http://mongoosejs.com/docs/api.html#model_Model-remove
+	Food.remove({slug:requestedSlug}, function(err){
+		if (err){ 
+			console.error(err);
+			res.send("Error when trying to remove food: "+ requestedSlug);
+		}
 
-			return res.render('remote_api_demo.html', templateData);
-		}	
-	})
+		res.send("Removed the food! <a href='/'>Back to home</a>.");
+	});
+
 };
-
-
-
-
-
-
-
