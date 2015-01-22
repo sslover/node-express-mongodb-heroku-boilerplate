@@ -16,6 +16,24 @@
     </head>
     <body>
 
+    <!-- start header - available for all pages -->
+    <div class="header">
+        <div class="navbar-left">
+            <a href="/">
+                <img src="/img/home.png" height="32">
+            </a>       
+        </div>        
+        <div class="logo">
+            <a href="/">
+                <img src="/img/logo.png" height="40" >
+            </a>            
+        </div>
+        <div class="navbar-right">
+            <a href="/add">Add a Product</a>
+        </div>
+    </div>
+    <!-- end header - available for all pages --> 
+
     <!-- custom templates come here -->
         {{{yield}}}
 
@@ -27,7 +45,7 @@
     <script src="/js/vendor/bootstrap.min.js"></script>
 
     <!-- form validation -->
-    <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/vendor/jquery.validate.min.js"></script>
 
     <!-- custom js -->
     <script src="/js/main.js"></script>

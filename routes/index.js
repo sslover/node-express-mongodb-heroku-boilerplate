@@ -39,7 +39,7 @@ exports.index = function(req, res) {
 		//build and render the template data object, which we will pass into the page
 		var templateData = {
 			food : data,
-			pageTitle : "ITP Snacks! (" + data.length + "Food Products)"
+			pageTitle : "ITP Snacks! (" + data.length + " Food Products)"
 		}
 
 		res.render('index.html', templateData);
@@ -345,11 +345,7 @@ exports.incrementUpvote = function(req,res){
 					return res.json({status:"ERROR"});
 				}
 
-				var jsonData = {
-					status: 'OK'
-				}
-
-				res.json(jsonData); // respond back with JSON
+				res.json(data); // respond back with JSON
 
 			}) // end update
 
