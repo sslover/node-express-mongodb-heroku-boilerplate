@@ -6,7 +6,7 @@
     "express": "^4.10.7",
     "hogan-express": "^0.5.2",
     "method-override": "^2.3.1",
-    "moment": "^2.8.4",
+    "moment": "^2.9.0",
     "mongoose": "^3.8.21",
     "request": "^2.51.0",
     "serve-favicon": "^2.2.0"
